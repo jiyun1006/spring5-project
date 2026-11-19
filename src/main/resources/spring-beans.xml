@@ -1,33 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- ━━━━━ [헤더] 스프링 Bean 설정 파일이라는 선언. 그냥 두면 됨 ━━━━━ -->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<!-- StringPrinter 클래스를 Spring Bean 으로설정 -->
+
+	<!-- ━━━━━ [1] Bean 등록 확인 ━━━━━
+	     목적: <bean> 하나 = new 하나
+	     확인: 콘솔에 "StringPrinter 기본생성자 호출됨!" 찍힘 -->
 	<bean id="strPrinter" class="myspring.di.xml.StringPrinter" />
-	<!--ConsolePrinter 클래스를 SpringBean으로 설정 -->
 	<bean id="conPrinter" class="myspring.di.xml.ConsolePrinter" />
 
-	<!-- Hello 클래스를 SpringBean으로 설정, Setter Injection 방식 -->
-	<bean id="hello" class="myspring.di.xml.Hello" scope="singleton">
-		<!-- setName("스프링") -->
+
+	<!-- ━━━━━ [2] Setter Injection 확인 ━━━━━
+	     목적: 기본 생성자 → setter 순서로 주입되는지
+	     확인: 콘솔에 "Hello 기본 생성자" → "setName()" → "setPrinter()" 순서로 찍힘 -->
+	<bean id="hello" class="myspring.di.xml.Hello">
+
+		<!-- [2-1] value: 글자 값 주입
+		     → hello.setName("스프링")
+		     → 테스트: assertEquals("Hello 스프링", hello.sayHello()) -->
 		<property name="name" value="스프링" />
+
+		<!-- [2-2] ref: 다른 Bean(객체) 주입 + 다형성
+		     → hello.setPrinter(strPrinter)
+		     → 테스트: hello.print() 후 assertEquals("Hello 스프링", strPrinter.toString())
+		     → ref="conPrinter"로만 바꾸면 Hello.java 수정 없이 콘솔 출력으로 바뀜 -->
 		<property name="printer" ref="strPrinter" />
-
 	</bean>
 
 
-	<!-- Hello 클래스를 SpringBean으로 설정 Constructor Injection 방식 -->
-	<bean id="helloCons" class="myspring.di.xml.Hello">
-		<constructor-arg index="0" value="생성자" />
-		<constructor-arg index="1" ref="conPrinter" />
+	<!-- ━━━━━ [3] Constructor Injection 확인 ━━━━━
+	     목적: 생성자 한 번으로 주입되는지 (setter 안 불림)
+	     확인: 콘솔에 "Hello 오버로딩 생성자 호출됨"만 찍힘
+	     → new Hello("생성자주입", conPrinter)
+	     → 테스트: assertEquals("Hello 생성자주입", helloC.sayHello()) -->
+	<bean id="helloC" class="myspring.di.xml.Hello">
+		<constructor-arg name="name" value="생성자주입" />
+		<constructor-arg name="printer" ref="conPrinter" />
 	</bean>
-
-
-
-
-
 
 </beans>
