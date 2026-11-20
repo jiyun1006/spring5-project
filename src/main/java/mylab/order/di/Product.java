@@ -1,4 +1,4 @@
-package mylab.order.di.xml;
+package mylab.order.di;
 
 public class Product {
     private String id;
