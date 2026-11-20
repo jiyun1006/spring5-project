@@ -1,0 +1,44 @@
+package myspring.di.annotation;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component
+public class HelloBean {
+	
+	@Value("${app.setter.name}")
+	String name;
+	
+	@Autowired
+	@Qualifier("stringPrinter")
+	PrinterBean printer;
+	
+	@Value("#{'${app.namelist}'.split(',')}")
+	List<String> names;
+
+	public HelloBean() {
+		System.out.println(this.getClass().getName() + "기본 생성자 호출됨");
+	}
+
+
+	public List<String> getNames() {
+		return this.names;
+	}
+
+	public void setNames(List<String> list) {
+		this.names = list;
+	}
+
+	public String sayHello() {
+		return "Hello " + name;
+	}
+
+	public void print() {
+		this.printer.print(sayHello());
+	}
+
+}
